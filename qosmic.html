@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qosmic — Digital Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --emerald: #0d6e5a;
+    --emerald-light: #12876d;
+    --emerald-glow: #1aaf8a;
+    --emerald-dim: #08503f;
+    --charcoal: #1a1c1e;
+    --charcoal-mid: #22262a;
+    --charcoal-light: #2d3237;
+    --charcoal-border: #333a40;
+    --off-white: #e8ede9;
+    --muted: #7a8a80;
+    --accent: #c8f0d8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--charcoal);
+    color: var(--off-white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom Cursor */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--emerald-glow);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid rgba(26,175,138,0.5);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.18s ease;
+  }
+  .cursor-ring.expand {
+    transform: translate(-50%,-50%) scale(1.8);
+    border-color: var(--emerald-glow);
+    background: rgba(26,175,138,0.06);
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.028;
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 24px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    backdrop-filter: blur(20px);
+    background: rgba(26,28,30,0.6);
+    border-bottom: 1px solid rgba(51,58,64,0.4);
+    transition: padding 0.3s;
+  }
+  nav.scrolled { padding: 16px 48px; }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -0.03em;
+    color: var(--off-white);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo span {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: var(--emerald-glow);
+    border-radius: 50%;
+    animation: pulse-dot 2s ease infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(26,175,138,0.6); }
+    50% { box-shadow: 0 0 0 6px rgba(26,175,138,0); }
+  }
+
+  .nav-links {
+    display: flex; gap: 36px; list-style: none;
+  }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: -3px; left: 0; right: 0;
+    height: 1px;
+    background: var(--emerald-glow);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .nav-links a:hover { color: var(--off-white); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  .nav-cta {
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid var(--charcoal-border);
+    color: var(--off-white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    cursor: none;
+    border-radius: 2px;
+    transition: all 0.25s ease;
+  }
+  .nav-cta:hover {
+    background: var(--emerald);
+    border-color: var(--emerald);
+  }
+
+  /* STICKY CTA */
+  .sticky-cta {
+    position: fixed;
+    right: -120px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    transform-origin: center;
+    z-index: 200;
+    background: var(--emerald);
+    color: var(--off-white);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 12px 28px;
+    text-decoration: none;
+    border-radius: 2px 2px 0 0;
+    transition: right 0.4s cubic-bezier(0.34,1.56,0.64,1), background 0.2s;
+    white-space: nowrap;
+  }
+  .sticky-cta.visible { right: -44px; }
+  .sticky-cta:hover { background: var(--emerald-light); right: -36px; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(13,110,90,0.18) 0%, transparent 70%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(51,58,64,0.25) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(51,58,64,0.25) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  .hero-content {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--emerald-glow);
+    margin-bottom: 32px;
+    padding: 8px 16px;
+    border: 1px solid rgba(26,175,138,0.25);
+    border-radius: 100px;
+    background: rgba(26,175,138,0.06);
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 5px; height: 5px;
+    background: var(--emerald-glow);
+    border-radius: 50%;
+    animation: pulse-dot 1.5s ease infinite;
+  }
+
+  .hero-headline {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3.2rem, 7vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    margin-bottom: 28px;
+    animation: fadeUp 0.8s 0.15s ease both;
+  }
+  .hero-headline em {
+    font-style: normal;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(200,240,216,0.4);
+  }
+  .hero-headline .accent-word {
+    position: relative;
+    display: inline-block;
+    color: var(--emerald-glow);
+  }
+  .hero-headline .accent-word::after {
+    content: '';
+    position: absolute;
+    bottom: 4px; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--emerald-glow), transparent);
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto 48px;
+    line-height: 1.7;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .hero-actions {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.45s ease both;
+  }
+  .btn-primary {
+    padding: 14px 32px;
+    background: var(--emerald);
+    color: var(--off-white);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    border: none;
+    border-radius: 2px;
+    cursor: none;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--emerald-light);
+    transform: translateX(-100%);
+    transition: transform 0.35s ease;
+  }
+  .btn-primary:hover::before { transform: translateX(0); }
+  .btn-primary span, .btn-primary svg { position: relative; z-index: 1; }
+
+  .btn-ghost {
+    padding: 14px 32px;
+    background: transparent;
+    color: var(--off-white);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--charcoal-border);
+    border-radius: 2px;
+    cursor: none;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.25s ease;
+  }
+  .btn-ghost:hover {
+    border-color: var(--emerald-glow);
+    color: var(--emerald-glow);
+  }
+
+  /* 3D ABSTRACT ELEMENT */
+  .hero-3d {
+    position: absolute;
+    right: 6%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 340px; height: 340px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  @media (max-width: 900px) { .hero-3d { display: none; } }
+
+  .hero-3d canvas {
+    width: 100%; height: 100%;
+  }
+
+  /* MARQUEE */
+  .marquee-strip {
+    background: var(--emerald-dim);
+    border-top: 1px solid rgba(26,175,138,0.15);
+    border-bottom: 1px solid rgba(26,175,138,0.15);
+    overflow: hidden;
+    padding: 14px 0;
+    display: flex; align-items: center;
+  }
+  .marquee-track {
+    display: flex; gap: 48px;
+    animation: marquee 24s linear infinite;
+    white-space: nowrap;
+  }
+  .marquee-track span {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(200,240,216,0.6);
+    flex-shrink: 0;
+  }
+  .marquee-track span.dot { color: var(--emerald-glow); font-size: 1.2rem; line-height: 1; }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* BENTO GRID — About */
+  .bento-section {
+    padding: 100px 48px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--emerald-glow);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 28px; height: 1px;
+    background: var(--emerald-glow);
+  }
+
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto;
+    gap: 16px;
+    margin-top: 48px;
+  }
+
+  .bento-card {
+    background: var(--charcoal-mid);
+    border: 1px solid var(--charcoal-border);
+    border-radius: 4px;
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .bento-card:hover {
+    border-color: rgba(26,175,138,0.3);
+    transform: translateY(-2px);
+  }
+  .bento-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--emerald), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .bento-card:hover::before { opacity: 1; }
+
+  .bc-1 { grid-column: span 7; }
+  .bc-2 { grid-column: span 5; }
+  .bc-3 { grid-column: span 4; }
+  .bc-4 { grid-column: span 4; }
+  .bc-5 { grid-column: span 4; }
+
+  .bento-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 4rem;
+    font-weight: 800;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(200,240,216,0.12);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .bento-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+  .bento-title .em { color: var(--emerald-glow); }
+  .bento-body { color: var(--muted); font-size: 0.95rem; line-height: 1.75; }
+
+  .bento-stat {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: var(--emerald-glow);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .bento-stat-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .tag {
+    padding: 6px 14px;
+    border: 1px solid var(--charcoal-border);
+    border-radius: 100px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .tag:hover { border-color: var(--emerald-glow); color: var(--emerald-glow); }
+
+  /* SERVICES */
+  #services {
+    padding: 100px 48px;
+    background: linear-gradient(180deg, var(--charcoal) 0%, var(--charcoal-mid) 100%);
+  }
+  .services-inner { max-width: 1400px; margin: 0 auto; }
+
+  .services-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 56px; flex-wrap: wrap; gap: 24px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .service-card {
+    background: var(--charcoal-light);
+    padding: 44px 36px;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+    transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+    group: true;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(13,110,90,0.12), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .service-card:hover {
+    background: var(--charcoal-mid);
+    border-color: rgba(26,175,138,0.25);
+    transform: translateY(-4px);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(26,175,138,0.1);
+  }
+  .service-card:hover::before { opacity: 1; }
+
+  .sc-icon {
+    width: 52px; height: 52px;
+    border-radius: 4px;
+    background: rgba(13,110,90,0.15);
+    border: 1px solid rgba(26,175,138,0.2);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    font-size: 1.4rem;
+    transition: all 0.3s;
+  }
+  .service-card:hover .sc-icon {
+    background: rgba(13,110,90,0.3);
+    border-color: var(--emerald-glow);
+    box-shadow: 0 0 20px rgba(26,175,138,0.2);
+  }
+
+  .sc-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+    transition: color 0.3s;
+  }
+  .service-card:hover .sc-title { color: var(--accent); }
+
+  .sc-body { color: var(--muted); font-size: 0.9rem; line-height: 1.7; margin-bottom: 28px; }
+
+  .sc-arrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--emerald-glow);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+    text-transform: uppercase;
+  }
+  .service-card:hover .sc-arrow { opacity: 1; transform: translateY(0); }
+
+  /* CASE STUDIES */
+  #work {
+    padding: 100px 0 100px 48px;
+  }
+  .work-inner { max-width: 100%; }
+  .work-header { max-width: 1400px; margin: 0 auto 56px; padding-right: 48px; display: flex; justify-content: space-between; align-items: flex-end; }
+
+  .scroll-gallery {
+    display: flex; gap: 24px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-right: 48px;
+    cursor: none;
+  }
+  .scroll-gallery::-webkit-scrollbar { display: none; }
+
+  .case-card {
+    flex: 0 0 420px;
+    height: 540px;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    scroll-snap-align: start;
+    background: var(--charcoal-mid);
+    border: 1px solid var(--charcoal-border);
+    transition: all 0.4s ease;
+  }
+  .case-card:hover { border-color: rgba(26,175,138,0.3); }
+
+  .case-thumb {
+    width: 100%; height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  .case-thumb-bg {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.6s ease;
+  }
+  .case-card:hover .case-thumb-bg { transform: scale(1.04); }
+
+  .case-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(26,28,30,0.97) 0%, rgba(26,28,30,0.4) 50%, transparent 100%);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 32px;
+  }
+
+  .case-tag {
+    display: inline-flex;
+    padding: 5px 12px;
+    border-radius: 100px;
+    background: rgba(26,175,138,0.15);
+    border: 1px solid rgba(26,175,138,0.25);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--emerald-glow);
+    margin-bottom: 12px;
+    width: fit-content;
+  }
+
+  .case-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .case-desc { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
+
+  .case-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--emerald-glow);
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: gap 0.2s;
+  }
+  .case-link:hover { gap: 10px; }
+
+  /* PROCESS */
+  #process {
+    padding: 100px 48px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .process-steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; margin-top: 64px; background: var(--charcoal-border); border: 1px solid var(--charcoal-border); }
+  .process-step {
+    background: var(--charcoal-mid);
+    padding: 40px 32px;
+    transition: background 0.3s;
+    position: relative;
+  }
+  .process-step:hover { background: var(--charcoal-light); }
+  .ps-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--emerald-glow);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .ps-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  .ps-body { color: var(--muted); font-size: 0.875rem; line-height: 1.7; }
+
+  /* CONTACT */
+  #contact {
+    padding: 100px 48px;
+    background: var(--charcoal-mid);
+    border-top: 1px solid var(--charcoal-border);
+  }
+  .contact-inner {
+    max-width: 900px; margin: 0 auto; text-align: center;
+  }
+  .contact-headline {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+  .contact-headline .outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(200,240,216,0.3);
+  }
+
+  .contact-sub { color: var(--muted); font-size: 1rem; margin-bottom: 48px; }
+
+  .contact-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; text-align: left; }
+  .cf-full { grid-column: span 2; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .form-input, .form-textarea {
+    background: var(--charcoal);
+    border: 1px solid var(--charcoal-border);
+    color: var(--off-white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    padding: 14px 18px;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.25s;
+  }
+  .form-input:focus, .form-textarea:focus { border-color: var(--emerald-glow); }
+  .form-textarea { resize: vertical; min-height: 120px; }
+  .form-input::placeholder, .form-textarea::placeholder { color: rgba(122,138,128,0.5); }
+
+  /* FOOTER */
+  footer {
+    padding: 48px;
+    border-top: 1px solid var(--charcoal-border);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+  }
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: -0.03em;
+    color: var(--off-white);
+  }
+  .footer-copy { color: var(--muted); font-size: 0.8rem; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--muted); font-size: 0.8rem; text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--emerald-glow); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  @media (max-width: 1024px) {
+    .services-grid { grid-template-columns: repeat(2,1fr); }
+    .process-steps { grid-template-columns: repeat(2,1fr); }
+    .bc-1 { grid-column: span 12; }
+    .bc-2 { grid-column: span 12; }
+    .bc-3, .bc-4, .bc-5 { grid-column: span 4; }
+  }
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .bento-section, #services, #work, #process, #contact { padding: 60px 24px; }
+    #work { padding-left: 24px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .process-steps { grid-template-columns: 1fr; }
+    .bc-3, .bc-4, .bc-5 { grid-column: span 12; }
+    .contact-form { grid-template-columns: 1fr; }
+    .cf-full { grid-column: span 1; }
+    footer { padding: 32px 24px; }
+    .work-header { padding-right: 24px; }
+    .scroll-gallery { padding-right: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Sticky CTA -->
+<a href="#contact" class="sticky-cta" id="stickyCta">Get in Touch</a>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">Qosmic <span></span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#process">Process</a></li>
+  </ul>
+  <button class="nav-cta">Start a Project</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Digital Marketing Studio</div>
+    <h1 class="hero-headline">
+      We build<br>
+      <span class="accent-word">intelligent</span><br>
+      <em>experiences</em>
+    </h1>
+    <p class="hero-sub">
+      Qosmic transforms complex digital challenges into precise, scalable solutions that move markets and elevate brands.
+    </p>
+    <div class="hero-actions">
+      <a href="#work" class="btn-primary">
+        <span>View Our Work</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="#services" class="btn-ghost">Explore Services</a>
+    </div>
+  </div>
+
+  <!-- 3D Canvas Element -->
+  <div class="hero-3d">
+    <canvas id="heroCanvas" width="340" height="340"></canvas>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-track" id="marqueeTrack">
+    <span>Strategy</span><span class="dot">✦</span>
+    <span>Brand Identity</span><span class="dot">✦</span>
+    <span>Web Design</span><span class="dot">✦</span>
+    <span>Development</span><span class="dot">✦</span>
+    <span>Motion Design</span><span class="dot">✦</span>
+    <span>AI Products</span><span class="dot">✦</span>
+    <span>UX Research</span><span class="dot">✦</span>
+    <span>Growth Strategy</span><span class="dot">✦</span>
+    <span>Strategy</span><span class="dot">✦</span>
+    <span>Brand Identity</span><span class="dot">✦</span>
+    <span>Web Design</span><span class="dot">✦</span>
+    <span>Development</span><span class="dot">✦</span>
+    <span>Motion Design</span><span class="dot">✦</span>
+    <span>AI Products</span><span class="dot">✦</span>
+    <span>UX Research</span><span class="dot">✦</span>
+    <span>Growth Strategy</span><span class="dot">✦</span>
+  </div>
+</div>
+
+<!-- ABOUT BENTO -->
+<section id="about">
+  <div class="bento-section">
+    <div class="section-label reveal">About Qosmic</div>
+
+    <div class="bento-grid">
+      <div class="bento-card bc-1 reveal" style="grid-column:span 12;">
+        <div class="bento-num">01</div>
+        <h2 class="bento-title">We don't just market—<br>we <span class="em">drive real results.</span></h2>
+        <p class="bento-body">Qosmic is a premium digital marketing studio built for brands that want to grow with precision. We combine performance strategy, creative execution, and data intelligence to turn attention into revenue.</p>
+      </div>
+
+
+      <div class="bento-card bc-3 reveal">
+        <div class="sc-icon" style="font-size:1.2rem;">⬡</div>
+        <div class="bento-title" style="font-size:1.1rem;">Deep Research</div>
+        <p class="bento-body" style="font-size:0.85rem;">Every engagement begins with intensive discovery — market signals, user psychology, competitive landscape.</p>
+      </div>
+      <div class="bento-card bc-4 reveal reveal-delay-1">
+        <div class="sc-icon" style="font-size:1.2rem;">◈</div>
+        <div class="bento-title" style="font-size:1.1rem;">Precision Craft</div>
+        <p class="bento-body" style="font-size:0.85rem;">We obsess over details — kerning, micro-interactions, load times. The invisible work that separates good from extraordinary.</p>
+      </div>
+      <div class="bento-card bc-5 reveal reveal-delay-2">
+        <div class="sc-icon" style="font-size:1.2rem;">⟐</div>
+        <div class="bento-title" style="font-size:1.1rem;">Scalable Systems</div>
+        <p class="bento-body" style="font-size:0.85rem;">We build with tomorrow in mind — modular design systems and architectures that grow with your ambitions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="services-inner">
+    <div class="services-header">
+      <div>
+        <div class="section-label reveal">What We Do</div>
+        <h2 class="section-title reveal reveal-delay-1">Services built<br>for impact</h2>
+      </div>
+      <a href="#contact" class="btn-ghost reveal reveal-delay-2">All Services →</a>
+    </div>
+
+    <div class="services-grid" style="grid-template-columns:repeat(2,1fr);">
+      <div class="service-card reveal">
+        <div class="sc-icon">◎</div>
+        <div class="sc-title">Performance Marketing</div>
+        <p class="sc-body">Data-driven paid media campaigns across Google, Meta, and beyond. We optimize every rupee of ad spend for measurable ROI — from funnel architecture to creative testing and real-time bid strategy.</p>
+        <div class="sc-arrow">Explore ↗</div>
+      </div>
+      <div class="service-card reveal reveal-delay-1">
+        <div class="sc-icon">⟁</div>
+        <div class="sc-title">Web Development</div>
+        <p class="sc-body">Fast, accessible, and conversion-engineered websites and web apps. We build with modern stacks — performance-first, mobile-native, and designed to scale with your growth.</p>
+        <div class="sc-arrow">Explore ↗</div>
+      </div>
+      <div class="service-card reveal reveal-delay-2">
+        <div class="sc-icon">⬡</div>
+        <div class="sc-title">SEO</div>
+        <p class="sc-body">Technical audits, content strategy, and authority-building that compound over time. We engineer search visibility that drives qualified organic traffic and reduces your cost-per-acquisition.</p>
+        <div class="sc-arrow">Explore ↗</div>
+      </div>
+      <div class="service-card reveal reveal-delay-3">
+        <div class="sc-icon">⊹</div>
+        <div class="sc-title">Social Media</div>
+        <p class="sc-body">Strategic presence across Instagram, LinkedIn, X, and emerging platforms. From content calendars to community management and influencer partnerships — we build audiences that convert.</p>
+        <div class="sc-arrow">Explore ↗</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASE STUDIES -->
+<section id="work">
+  <div class="work-inner">
+    <div class="work-header">
+      <div>
+        <div class="section-label reveal">Selected Work</div>
+        <h2 class="section-title reveal reveal-delay-1">Case Studies</h2>
+      </div>
+      <a href="#" class="btn-ghost reveal reveal-delay-2">View All →</a>
+    </div>
+
+    <div class="scroll-gallery" id="scrollGallery">
+
+      <div class="case-card">
+        <div class="case-thumb">
+          <div class="case-thumb-bg" style="background:linear-gradient(135deg,#0a3d30 0%,#0d6e5a 40%,#071f18 100%);">
+            <svg width="160" height="160" viewBox="0 0 160 160" fill="none" opacity="0.4">
+              <circle cx="80" cy="80" r="70" stroke="#1aaf8a" stroke-width="1"/>
+              <circle cx="80" cy="80" r="50" stroke="#1aaf8a" stroke-width="0.5" stroke-dasharray="4 6"/>
+              <circle cx="80" cy="80" r="30" stroke="#1aaf8a" stroke-width="1"/>
+              <line x1="10" y1="80" x2="150" y2="80" stroke="#1aaf8a" stroke-width="0.5"/>
+              <line x1="80" y1="10" x2="80" y2="150" stroke="#1aaf8a" stroke-width="0.5"/>
+            </svg>
+          </div>
+          <div class="case-overlay">
+            <span class="case-tag">Fintech</span>
+            <div class="case-title">Meridian Capital</div>
+            <p class="case-desc">Brand overhaul and digital platform for a Series B investment firm managing $800M AUM.</p>
+            <a href="#" class="case-link">View Case Study ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-card">
+        <div class="case-thumb">
+          <div class="case-thumb-bg" style="background:linear-gradient(145deg,#111416 0%,#1a2c24 50%,#0d3d2e 100%);">
+            <svg width="160" height="160" viewBox="0 0 160 160" fill="none" opacity="0.45">
+              <rect x="30" y="30" width="100" height="100" stroke="#1aaf8a" stroke-width="1" rx="4"/>
+              <rect x="50" y="50" width="60" height="60" stroke="#1aaf8a" stroke-width="0.5" rx="2" transform="rotate(15 80 80)"/>
+              <rect x="60" y="60" width="40" height="40" fill="rgba(26,175,138,0.1)" stroke="#1aaf8a" stroke-width="1"/>
+            </svg>
+          </div>
+          <div class="case-overlay">
+            <span class="case-tag">SaaS</span>
+            <div class="case-title">Aura Analytics</div>
+            <p class="case-desc">Full-stack product design for a B2B analytics platform serving 12,000+ enterprise users.</p>
+            <a href="#" class="case-link">View Case Study ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-card">
+        <div class="case-thumb">
+          <div class="case-thumb-bg" style="background:linear-gradient(160deg,#07241d 0%,#0f5042 60%,#0a1f19 100%);">
+            <svg width="160" height="160" viewBox="0 0 160 160" fill="none" opacity="0.4">
+              <polygon points="80,20 140,110 20,110" stroke="#1aaf8a" stroke-width="1" fill="none"/>
+              <polygon points="80,45 115,100 45,100" stroke="#1aaf8a" stroke-width="0.5" fill="rgba(26,175,138,0.05)"/>
+              <circle cx="80" cy="75" r="10" fill="rgba(26,175,138,0.2)" stroke="#1aaf8a" stroke-width="1"/>
+            </svg>
+          </div>
+          <div class="case-overlay">
+            <span class="case-tag">E-Commerce</span>
+            <div class="case-title">Strata Supply Co.</div>
+            <p class="case-desc">Premium DTC rebrand and headless commerce build with 340% YoY conversion improvement.</p>
+            <a href="#" class="case-link">View Case Study ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-card">
+        <div class="case-thumb">
+          <div class="case-thumb-bg" style="background:linear-gradient(125deg,#0c2820 0%,#166b56 50%,#071e16 100%);">
+            <svg width="160" height="160" viewBox="0 0 160 160" fill="none" opacity="0.4">
+              <path d="M80 20 L140 80 L80 140 L20 80 Z" stroke="#1aaf8a" stroke-width="1" fill="none"/>
+              <path d="M80 40 L120 80 L80 120 L40 80 Z" stroke="#1aaf8a" stroke-width="0.5" fill="rgba(26,175,138,0.07)"/>
+              <circle cx="80" cy="80" r="18" fill="rgba(26,175,138,0.15)" stroke="#1aaf8a" stroke-width="1"/>
+            </svg>
+          </div>
+          <div class="case-overlay">
+            <span class="case-tag">Healthcare</span>
+            <div class="case-title">Helix Health</div>
+            <p class="case-desc">Patient-centered app redesign improving appointment adherence by 62% across 3 hospital networks.</p>
+            <a href="#" class="case-link">View Case Study ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-card">
+        <div class="case-thumb">
+          <div class="case-thumb-bg" style="background:linear-gradient(135deg,#091c16 0%,#0d4d3d 60%,#061410 100%);">
+            <svg width="160" height="160" viewBox="0 0 160 160" fill="none" opacity="0.4">
+              <circle cx="80" cy="80" r="55" stroke="#1aaf8a" stroke-width="1" stroke-dasharray="8 4"/>
+              <circle cx="80" cy="40" r="12" fill="rgba(26,175,138,0.2)" stroke="#1aaf8a" stroke-width="1"/>
+              <circle cx="110" cy="100" r="12" fill="rgba(26,175,138,0.2)" stroke="#1aaf8a" stroke-width="1"/>
+              <circle cx="50" cy="100" r="12" fill="rgba(26,175,138,0.2)" stroke="#1aaf8a" stroke-width="1"/>
+            </svg>
+          </div>
+          <div class="case-overlay">
+            <span class="case-tag">AI / LLM</span>
+            <div class="case-title">Synapse AI</div>
+            <p class="case-desc">Zero-to-one product design for an enterprise AI assistant platform, from brief to launch in 14 weeks.</p>
+            <a href="#" class="case-link">View Case Study ↗</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div>
+    <div class="section-label reveal">How We Work</div>
+    <h2 class="section-title reveal reveal-delay-1" style="margin-top:8px;">A process built<br>on clarity</h2>
+
+    <div class="process-steps">
+      <div class="process-step reveal">
+        <div class="ps-num">Phase 01</div>
+        <div class="ps-title">Discovery & Strategy</div>
+        <p class="ps-body">Intensive research sessions to map competitive landscape, user needs, and define measurable success criteria for your engagement.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-1">
+        <div class="ps-num">Phase 02</div>
+        <div class="ps-title">Design & Prototype</div>
+        <p class="ps-body">Rapid conceptualization through to high-fidelity prototypes. We test early and iterate fast, reducing risk before development begins.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-2">
+        <div class="ps-num">Phase 03</div>
+        <div class="ps-title">Build & Engineer</div>
+        <p class="ps-body">Performant, accessible, and maintainable code. We use modern stacks and rigorous QA to ensure your product is production-ready.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-3">
+        <div class="ps-num">Phase 04</div>
+        <div class="ps-title">Launch & Optimize</div>
+        <p class="ps-body">Go-live support, analytics configuration, and an ongoing optimization loop to compound results after your initial launch.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="section-label reveal" style="justify-content:center;">Let's Build Together</div>
+    <h2 class="contact-headline reveal reveal-delay-1">
+      Ready to go<br><span class="outline">Qosmic?</span>
+    </h2>
+    <p class="contact-sub reveal reveal-delay-2">Tell us about your project and we'll be in touch within 24 hours.</p>
+
+    <div class="contact-form reveal reveal-delay-2">
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input type="text" class="form-input" placeholder="Jane Smith">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company</label>
+        <input type="text" class="form-input" placeholder="Acme Corp">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" placeholder="jane@acme.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Budget Range</label>
+        <input type="text" class="form-input" placeholder="$25,000+">
+      </div>
+      <div class="form-group cf-full">
+        <label class="form-label">Tell us about your project</label>
+        <textarea class="form-textarea" placeholder="What are you building? What's the challenge you're solving?"></textarea>
+      </div>
+      <div class="cf-full" style="text-align:center;margin-top:8px;">
+        <button class="btn-primary" style="font-size:1rem;padding:16px 48px;cursor:none;">
+          <span>Send Message</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Qosmic</div>
+  <div class="footer-copy">© 2025 Qosmic Studio. All rights reserved.</div>
+  <div class="footer-links">
+    <a href="#">Twitter</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">Dribbble</a>
+    <a href="#">Privacy</a>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 5 + 'px';
+    cursor.style.top = my - 5 + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx - 18) * 0.12;
+    ry += (my - ry - 18) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a,button,.service-card,.case-card,.bento-card').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('expand'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('expand'));
+  });
+
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  const stickyCta = document.getElementById('stickyCta');
+  window.addEventListener('scroll', () => {
+    const s = window.scrollY;
+    navbar.classList.toggle('scrolled', s > 60);
+    stickyCta.classList.toggle('visible', s > 300);
+  });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  reveals.forEach(r => revealObs.observe(r));
+
+  // 3D Canvas Abstract Element
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let t = 0;
+
+  function drawAbstract() {
+    ctx.clearRect(0,0,340,340);
+    const cx = 170, cy = 170;
+
+    // Outer orbiting ring
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(t * 0.004);
+    ctx.strokeStyle = 'rgba(26,175,138,0.18)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 8]);
+    ctx.beginPath();
+    ctx.arc(0, 0, 148, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // Middle ring
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(-t * 0.006);
+    ctx.strokeStyle = 'rgba(26,175,138,0.28)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 5]);
+    ctx.beginPath();
+    ctx.arc(0, 0, 110, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // Inner solid ring
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(t * 0.009);
+    ctx.strokeStyle = 'rgba(26,175,138,0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.arc(0, 0, 74, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // Rotating triangle
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(t * 0.007);
+    ctx.strokeStyle = 'rgba(200,240,216,0.2)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    const r = 95;
+    for (let i = 0; i < 3; i++) {
+      const a = (i / 3) * Math.PI * 2 - Math.PI / 2;
+      i === 0 ? ctx.moveTo(r * Math.cos(a), r * Math.sin(a)) : ctx.lineTo(r * Math.cos(a), r * Math.sin(a));
+    }
+    ctx.closePath();
+    ctx.stroke();
+    ctx.restore();
+
+    // Rotating square
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(-t * 0.005 + Math.PI / 4);
+    ctx.strokeStyle = 'rgba(200,240,216,0.12)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(-70, -70, 140, 140);
+    ctx.restore();
+
+    // Orbiting dots on rings
+    const dots = [
+      { r: 148, speed: 0.005, color: 'rgba(26,175,138,0.9)', size: 5 },
+      { r: 148, speed: 0.005, offset: Math.PI, color: 'rgba(26,175,138,0.5)', size: 3 },
+      { r: 110, speed: -0.007, color: 'rgba(200,240,216,0.8)', size: 4 },
+      { r: 74, speed: 0.009, color: 'rgba(26,175,138,0.7)', size: 4 },
+    ];
+    dots.forEach(d => {
+      const angle = t * d.speed + (d.offset || 0);
+      const x = cx + d.r * Math.cos(angle);
+      const y = cy + d.r * Math.sin(angle);
+      ctx.beginPath();
+      ctx.arc(x, y, d.size, 0, Math.PI * 2);
+      ctx.fillStyle = d.color;
+      ctx.fill();
+      // glow
+      const grad = ctx.createRadialGradient(x,y,0,x,y,d.size*3);
+      grad.addColorStop(0, d.color.replace(/[\d.]+\)$/, '0.4)'));
+      grad.addColorStop(1, 'transparent');
+      ctx.beginPath();
+      ctx.arc(x, y, d.size * 3, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    });
+
+    // Center core
+    const coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 28);
+    coreGrad.addColorStop(0, 'rgba(26,175,138,0.8)');
+    coreGrad.addColorStop(0.4, 'rgba(13,110,90,0.4)');
+    coreGrad.addColorStop(1, 'transparent');
+    ctx.beginPath();
+    ctx.arc(cx, cy, 28, 0, Math.PI * 2);
+    ctx.fillStyle = coreGrad;
+    ctx.fill();
+
+    // Center dot
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(200,240,216,0.95)';
+    ctx.fill();
+
+    // Pulsing glow aura
+    const pulseR = 148 + Math.sin(t * 0.04) * 6;
+    const aura = ctx.createRadialGradient(cx,cy,pulseR - 20,cx,cy,pulseR + 20);
+    aura.addColorStop(0,'transparent');
+    aura.addColorStop(0.5,'rgba(13,110,90,0.06)');
+    aura.addColorStop(1,'transparent');
+    ctx.beginPath();
+    ctx.arc(cx, cy, pulseR + 20, 0, Math.PI * 2);
+    ctx.fillStyle = aura;
+    ctx.fill();
+
+    t++;
+    requestAnimationFrame(drawAbstract);
+  }
+  drawAbstract();
+
+  // Drag-scroll gallery
+  const gallery = document.getElementById('scrollGallery');
+  let isDown = false, startX, scrollLeft;
+  gallery.addEventListener('mousedown', e => {
+    isDown = true; startX = e.pageX - gallery.offsetLeft; scrollLeft = gallery.scrollLeft;
+  });
+  gallery.addEventListener('mouseleave', () => isDown = false);
+  gallery.addEventListener('mouseup', () => isDown = false);
+  gallery.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - gallery.offsetLeft;
+    const walk = (x - startX) * 1.2;
+    gallery.scrollLeft = scrollLeft - walk;
+  });
+</script>
+</body>
+</html>
